@@ -1,25 +1,62 @@
-import React from "react";
+import { useTodo } from "@/Contex";
+import React, { useState } from "react";
 
-const TodoItem = () => {
+const TodoItem = ({ todos }) => {
+  const [iseditable, setIseditable] = useState(false);
+  const [todoMsg, setTodoMsg] = useState(todos.tittle);
+  const { editTodo, toggleTodo, deleteTodo } = useTodo();
+
+  const updateTodo = () => {
+    editTodo(todos.id, todoMsg);
+    setIseditable(false);
+  };
+  const removeTodo = () => {
+    deleteTodo(todos.id);
+  };
+  const toggleCompleate = () => {
+    toggleTodo(todos.id);
+  };
+
   return (
     <>
       <div
-        className={`bg-main rounded-md text-white flex gap-4 px-4 h-12 items-center ${
-          false && "bg-base"
+        className={`rounded-md text-white flex gap-4 px-4 h-12 items-center ${
+          todos.complete ? "bg-base" : "bg-main"
         }`}
       >
-        <input type="checkbox" className="cursor-pointer" />
         <input
-          type="text"
-          readOnly={true}
-          className={`bg-transparent w-full border-black/30 outline-none rounded-md h-10 px-2 ${
-            false ? "border" : ""
-          } ${false && "line-through"}`}
+          type="checkbox"
+          checked={todos.complete}
+          onChange={toggleCompleate}
+          className="cursor-pointer"
         />
-        <button className="text-green-500 hover:text-green-600 font-medium">
-          {false ? "Edit" : "Save"}
+        <input
+          value={todoMsg}
+          onChange={(e) => {
+            if (todos.complete) return;
+            setTodoMsg(e.target.value);
+          }}
+          type="text"
+          readOnly={!iseditable}
+          className={`bg-transparent w-full border-black/30 outline-none rounded-md h-10 px-2 ${
+            iseditable ? "border" : ""
+          } ${todos.complete && "line-through"}`}
+        />
+        <button
+          onClick={() => {
+            if (todos.complete) return;
+            if (iseditable) {
+              updateTodo();
+            } else setIseditable((prev) => !prev);
+          }}
+          className="text-green-500 hover:text-green-600 font-medium"
+        >
+          {!iseditable ? "Edit" : "Save"}
         </button>
-        <button className="text-pink-700 font-semibold hover:text-red-600">
+        <button
+          onClick={removeTodo}
+          className="text-pink-700 font-semibold hover:text-red-600"
+        >
           Delete
         </button>
       </div>

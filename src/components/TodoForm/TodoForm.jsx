@@ -4,10 +4,13 @@ import React, { useState } from "react";
 const TodoForm = () => {
   const [state, setState] = useState("");
   const { addTodo } = useTodo();
+
   const stateHandel = (e) => {
     e.preventDefault();
+    if (state.length === 0) {
+      return;
+    }
     addTodo(state);
-    console.log(state);
     setState("");
   };
 
